@@ -1,8 +1,11 @@
 public class Consumidor {
+  private int tarefasExecutadas;
   public static final int MAX_THREAD = 3;
 
   public void consumir(Tarefa[] tarefas) {
     int i, j, iteracao, resto;
+    long inicio = System.currentTimeMillis();
+    tarefasExecutadas = 0;
 
     /*
      * Exemplo:
@@ -30,6 +33,7 @@ public class Consumidor {
       for (j = 0; j < MAX_THREAD; j++)
         try {
           tarefas[MAX_THREAD * i + j].join();
+          tarefasExecutadas++;
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -47,8 +51,18 @@ public class Consumidor {
     for (j = 0; j < resto; j++)
       try {
         tarefas[MAX_THREAD * i + j].join();
+        tarefasExecutadas++;
       } catch (Exception e) {
         e.printStackTrace();
       }
+
+      long fim = System.currentTimeMillis();
+      double tempoTotal = (fim - inicio) / 1000.0;
+      System.out.println("Total de tarefas executadas: " + tarefasExecutadas);
+      System.out.println("Tempo total: " + tempoTotal + " segundos");
+  }
+
+  public int getTarefasExecutadas() {
+    return tarefasExecutadas;
   }
 }
