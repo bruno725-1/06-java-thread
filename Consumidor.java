@@ -1,56 +1,41 @@
+import java.util.Arrays;
+
 public class Consumidor {
-  private final int maxThread;
+  public void consumir(Tarefa[] tarefas) {
+    int alta = 0;
+    int media = 0;
+    int baixa = 0;
 
-  public Consumidor(int maxThread) {
-    this.maxThread = maxThread;
-  }
+    Arrays.sort(tarefas, (t1, t2) -> Integer.compare(
+        t1.getPrioridade().getValor(),
+        t2.getPrioridade().getValor()));
 
-  public double consumir(Tarefa[] tarefas) {
-    int i, j, iteracao, resto;
+    System.out.println("Executando por prioridade:");
 
-    long inicio = System.currentTimeMillis();
+    for (Tarefa tarefa : tarefas) {
+      try {
+        tarefa.start();
+        tarefa.join();
 
-    iteracao = tarefas.length / maxThread;
-    resto = tarefas.length % maxThread;
+        switch (tarefa.getPrioridade()) {
+          case ALTA:
+            alta++;
+            break;
 
-    System.out.println("Tamanho do vetor de tarefas: " + tarefas.length);
-    System.out.println("Número máximo de threads: " + maxThread);
-    System.out.println("Iterações: " + iteracao);
-    System.out.println("Resto: " + resto);
+          case MEDIA:
+            media++;
+            break;
 
-    for (i = 0; i < iteracao; i++) {
-      for (j = 0; j < maxThread; j++)
-        try {
-          tarefas[maxThread * i + j].start();
-        } catch (Exception e) {
-          e.printStackTrace();
+          case BAIXA:
+            baixa++;
+            break;
         }
 
-      for (j = 0; j < maxThread; j++)
-        try {
-          tarefas[maxThread * i + j].join();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-
-      System.out.println("Fim da iteração: " + i);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
-    for (j = 0; j < resto; j++)
-      try {
-        tarefas[maxThread * i + j].start();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-
-    for (j = 0; j < resto; j++)
-      try {
-        tarefas[maxThread * i + j].join();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-
-    long fim = System.currentTimeMillis();
-    return (fim - inicio) / 1000.0;
+    System.out.printf("Resumo: %d ALTA, %d MEDIA, %d BAIXA\n", alta, media, baixa);
   }
 }
