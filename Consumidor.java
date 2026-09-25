@@ -1,39 +1,34 @@
 public class Consumidor {
-  private int tarefasExecutadas;
-  public static final int MAX_THREAD = 3;
+  private final int maxThread;
 
-  public void consumir(Tarefa[] tarefas) {
+  public Consumidor(int maxThread) {
+    this.maxThread = maxThread;
+  }
+
+  public double consumir(Tarefa[] tarefas) {
     int i, j, iteracao, resto;
-    long inicio = System.currentTimeMillis();
-    tarefasExecutadas = 0;
 
-    /*
-     * Exemplo:
-     * Tamanho do vetor de tarefas: 8
-     * MAX_THREAD: 3
-     * iteracao: 8 / 3 = 2
-     * resto: 8 % 3 = 2
-     */
-    iteracao = tarefas.length / MAX_THREAD;
-    resto = tarefas.length % MAX_THREAD;
+    long inicio = System.currentTimeMillis();
+
+    iteracao = tarefas.length / maxThread;
+    resto = tarefas.length % maxThread;
 
     System.out.println("Tamanho do vetor de tarefas: " + tarefas.length);
-    System.out.println("Número máximo de threads: " + MAX_THREAD);
+    System.out.println("Número máximo de threads: " + maxThread);
     System.out.println("Iterações: " + iteracao);
     System.out.println("Resto: " + resto);
 
     for (i = 0; i < iteracao; i++) {
-      for (j = 0; j < MAX_THREAD; j++)
+      for (j = 0; j < maxThread; j++)
         try {
-          tarefas[MAX_THREAD * i + j].start();
+          tarefas[maxThread * i + j].start();
         } catch (Exception e) {
           e.printStackTrace();
         }
 
-      for (j = 0; j < MAX_THREAD; j++)
+      for (j = 0; j < maxThread; j++)
         try {
-          tarefas[MAX_THREAD * i + j].join();
-          tarefasExecutadas++;
+          tarefas[maxThread * i + j].join();
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -43,26 +38,19 @@ public class Consumidor {
 
     for (j = 0; j < resto; j++)
       try {
-        tarefas[MAX_THREAD * i + j].start();
+        tarefas[maxThread * i + j].start();
       } catch (Exception e) {
         e.printStackTrace();
       }
 
     for (j = 0; j < resto; j++)
       try {
-        tarefas[MAX_THREAD * i + j].join();
-        tarefasExecutadas++;
+        tarefas[maxThread * i + j].join();
       } catch (Exception e) {
         e.printStackTrace();
       }
 
-      long fim = System.currentTimeMillis();
-      double tempoTotal = (fim - inicio) / 1000.0;
-      System.out.println("Total de tarefas executadas: " + tarefasExecutadas);
-      System.out.println("Tempo total: " + tempoTotal + " segundos");
-  }
-
-  public int getTarefasExecutadas() {
-    return tarefasExecutadas;
+    long fim = System.currentTimeMillis();
+    return (fim - inicio) / 1000.0;
   }
 }
